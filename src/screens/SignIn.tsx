@@ -3,10 +3,12 @@ import { Alert } from "react-native";
 import { VStack, Heading, Icon, useTheme } from "native-base";
 import { Envelope, Key } from "phosphor-react-native";
 
-import Logo from "./../assets/logo_primary.svg";
+import Logo from "./../assets/Unhas-Gabriele-Agostinho.svg";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
+
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,21 +24,21 @@ export function SignIn() {
 
     setIsLoading(true);
 
-    // signInWithEmailAndPassword(getAuth(), email.trim(), password.trim()).catch(
-    //   (error) => {
-    //     console.log(error);
-    //     setIsLoading(false);
+    signInWithEmailAndPassword(getAuth(), email.trim(), password.trim()).catch(
+      error => {
+        console.log(error);
+        setIsLoading(false);
 
-    //     switch (error.code) {
-    //       case "auth/invalid-email":
-    //       case "auth/invalid-password":
-    //       case "auth/user-not-found":
-    //         return Alert.alert("Entrar", "E-mail ou senha inválido");
-    //       default:
-    //         return Alert.alert("Entrar", "Não foi possível acessar");
-    //     }
-    //   }
-    // );
+        switch (error.code) {
+          case "auth/invalid-email":
+          case "auth/invalid-password":
+          case "auth/user-not-found":
+            return Alert.alert("Entrar", "E-mail ou senha inválido");
+          default:
+            return Alert.alert("Entrar", "Não foi possível acessar");
+        }
+      },
+    );
   }
 
   return (
@@ -54,6 +56,7 @@ export function SignIn() {
           <Icon as={<Envelope color={colors.gray[300]} />} ml={4} />
         }
         keyboardType={"email-address"}
+        autoCapitalize={"none"}
         onChangeText={setEmail}
       />
 

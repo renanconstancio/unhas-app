@@ -18,27 +18,46 @@ import { Button } from "../components/Button";
 import { Order, OrderProps } from "../components/Order";
 import { Loading } from "../components/Loading";
 
-import Logo from "../assets/Unhas-Gabriele-Agostinho.svg";
+import { getAuth, signOut } from "firebase/auth";
+import { collection, getDocs } from "firebase/firestore";
+import { dateFormat } from "../utils/firestoreDateFormat";
+import db from "../config/firebase";
+
+import Logo from "../assets/logo.svg";
 
 export function Home() {
   const navigation = useNavigation();
 
-  const [isLoading, setIsLoding] = useState(true);
   const [statusSelected, setStatusSelected] = useState<"open" | "closed">(
     "open",
   );
+  const [isLoading, setIsLoding] = useState(true);
   const [orders, setOrders] = useState<OrderProps[]>([]);
 
   const { colors } = useTheme();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const snapDocs = listOrders();
+  useEffect(() => {
+    (async () => {
+      const snapDocs = (await getDocs(collection(db, "orders"))).docs.map(
+        doc => {
+          const { patrimony, status, created_at } = doc.data();
+          return {
+            id: doc.id,
+            patrimony,
+            when: dateFormat(created_at),
+            status,
+          };
+        },
+      );
 
-  //     setOrders(snapDocs);
-  //     setIsLoding(false);
-  //   })();
-  // }, [statusSelected]);
+      setOrders(snapDocs);
+      setIsLoding(false);
+    })();
+  }, [statusSelected]);
+
+  const searchStatusSelected: OrderProps[] = orders.filter(
+    items => items.status === statusSelected,
+  );
 
   function handleNewOrder() {
     navigation.navigate("new");
@@ -49,7 +68,12 @@ export function Home() {
   }
 
   function handleLogout() {
-    return;
+    signOut(getAuth())
+      .then(() => navigation.navigate("home"))
+      .catch(error => {
+        console.log(error);
+        return Alert.alert("Sair", "Não foi possível sair?\nTente novamente.");
+      });
   }
 
   return (
@@ -74,7 +98,7 @@ export function Home() {
       <VStack flex={1} px={6}>
         <HStack w={"full"} mt={8} mb={4} justifyContent={"space-between"}>
           <Heading color={"gray.100"}>Meus Chamados</Heading>
-          <Text color={"gray.200"}>{orders.length ?? 0}</Text>
+          <Text color={"gray.200"}>{searchStatusSelected.length ?? 0}</Text>
         </HStack>
         <HStack space={3} mb={8}>
           <Filter
@@ -94,7 +118,7 @@ export function Home() {
           <Loading />
         ) : (
           <FlatList
-            data={orders}
+            data={searchStatusSelected}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <Order data={item} onPress={() => handleOpenDetails(item.id)} />

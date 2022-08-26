@@ -9,9 +9,9 @@ export const THEME = extendTheme({
       700: "#af2169",
     },
     yellow: {
-      700: "#ffea98",
-      500: "#fff1ba",
-      300: "#fff8dd",
+      700: "#efc054",
+      500: "#efdb54",
+      300: "#efed54",
     },
     gray: {
       700: "#121214",

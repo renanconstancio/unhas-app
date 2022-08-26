@@ -13,7 +13,19 @@ import {
 import { CardDetails } from "../components/CardDetails";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import db from "../config/firebase";
+import { dateFormat } from "../utils/firestoreDateFormat";
 
 type RouteParams = {
   orderId: string;
@@ -26,25 +38,77 @@ type OrderDetails = {
 } & OrderProps;
 
 export function Details() {
-  const route = useRoute();
-  const navigation = useNavigation();
-
-  const [isLoading, setIsLoadind] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [solution, setSolution] = useState("");
   const [order, setOrder] = useState<OrderDetails>({} as OrderDetails);
 
   const { colors } = useTheme();
 
+  const navigation = useNavigation();
+  const route = useRoute();
+
   const { orderId } = route.params as RouteParams;
 
-  function handleOrderClosed() {
+  async function handleOrderClosed() {
     if (!solution) {
       return Alert.alert(
         "Solicitação",
         "Informe a solução para encerrar  a solicitação.",
       );
     }
+
+    setIsLoading(true);
+    await updateDoc(doc(db, "orders", orderId), {
+      solution,
+      status: "closed",
+      updated_at: Timestamp.now(),
+    })
+      .then(() => {
+        Alert.alert("Solicitação", "Solicitação finalizada com sucesso.");
+        navigation.goBack();
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+        return Alert.alert(
+          "Solicitação",
+          "Não foi possível registrar a solicitação.",
+        );
+      });
   }
+
+  useEffect(() => {
+    (async () => {
+      return await getDoc(doc(db, "orders", orderId))
+        .then(resp => {
+          const {
+            created_at,
+            description,
+            patrimony,
+            status,
+            closed_at,
+            solution,
+          } = resp.data();
+
+          const closed = closed_at ? dateFormat(closed_at) : null;
+
+          setOrder({
+            id: orderId,
+            patrimony,
+            description,
+            status,
+            solution,
+            when: dateFormat(created_at),
+            closed,
+          });
+          setIsLoading(false);
+        })
+        .catch(() => {
+          Alert.alert("Ops", "Não há dados para serem mostrados");
+          navigation.goBack();
+        });
+    })();
+  }, [orderId]);
 
   if (isLoading) {
     return <Loading />;
