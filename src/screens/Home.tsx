@@ -60,7 +60,7 @@ export function Home() {
   );
 
   function handleNewOrder() {
-    navigation.navigate("new");
+    navigation.navigate("register");
   }
 
   function handleOpenDetails(orderId: string) {

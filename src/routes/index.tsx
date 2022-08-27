@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { Loading } from "../components/Loading";
-import { SignIn } from "../screens/SignIn";
-import { AppRoutes } from "./app.routes";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { AppAuth } from "./app.auth";
+import { AppRoutes } from "./app.routes";
 
 export function Routes() {
   const [loading, setIsLoading] = useState(true);
@@ -26,7 +26,7 @@ export function Routes() {
 
   return (
     <NavigationContainer>
-      {user ? <AppRoutes /> : <SignIn />}
+      {user ? <AppAuth /> : <AppRoutes />}
     </NavigationContainer>
   );
 }
