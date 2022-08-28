@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 import { VStack } from "native-base";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { Alert } from "react-native";
 
 import { Header } from "../components/Header";
@@ -8,9 +9,8 @@ import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 import { collection, addDoc, Timestamp, getDocs } from "firebase/firestore";
-import db from "../config/firebase";
-import { dateFormat } from "../utils/firestoreDateFormat";
 import { OrderProps } from "../components/Order";
+import db from "../config/firebase";
 
 type RouteParams = {
   orderId: string;

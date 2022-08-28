@@ -69,7 +69,7 @@ export function Home() {
 
   function handleLogout() {
     signOut(getAuth())
-      .then(() => navigation.navigate("home"))
+      .then(() => navigation.navigate("singin"))
       .catch(error => {
         console.log(error);
         return Alert.alert("Sair", "Não foi possível sair?\nTente novamente.");
@@ -87,7 +87,7 @@ export function Home() {
         pb={5}
         px={6}
       >
-        <Logo />
+        <Logo width={55} />
 
         <IconButton
           icon={<SignOut size={26} color={colors.gray[300]} />}

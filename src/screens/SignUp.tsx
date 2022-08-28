@@ -45,22 +45,6 @@ export function SignUp() {
         }
         // ..
       });
-    // await database.app
-    //   .auth()
-    //   .createUserWithEmailAndPassword(email.trim(), password.trim())
-    //   .catch((error) => {
-    //     console.log(error);
-    //     setIsLoading(false);
-
-    //     switch (error.code) {
-    //       case "auth/invalid-email":
-    //       case "auth/invalid-password":
-    //       case "auth/user-not-found":
-    //         return Alert.alert("Entrar", "E-mail ou senha inválido");
-    //       default:
-    //         return Alert.alert("Entrar", "Não foi possível acessar");
-    //     }
-    //   });
   }
 
   return (
