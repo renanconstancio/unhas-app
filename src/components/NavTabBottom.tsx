@@ -10,7 +10,7 @@ type Props = {
   navigation: NavigationProp<NavigatorScreenParams<NavigationState>>;
 } & StyledProps;
 
-export function NavTabBottom({ navigation, ...rest }: Props) {
+export function NavTabBottom({ state, navigation, ...rest }: any) {
   const { colors } = useTheme();
 
   function handleGoTo(screenName: any) {
@@ -40,7 +40,7 @@ export function NavTabBottom({ navigation, ...rest }: Props) {
         }}
         bgColor={colors.gray[100]}
         icon={<Calendar color={colors.gray[900]} size={36} />}
-        onPress={handleGoTo}
+        onPress={() => handleGoTo("calendar")}
       />
       <IconButton
         p={5}

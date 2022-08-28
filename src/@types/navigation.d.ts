@@ -4,6 +4,7 @@ export declare global {
       home: undefined;
       register: undefined;
       profile: undefined;
+      calendar: undefined;
       details: { orderId: string };
       singin: undefined;
       singup: undefined;

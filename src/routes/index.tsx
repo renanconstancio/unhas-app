@@ -4,6 +4,7 @@ import { Loading } from "../components/Loading";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AppAuth } from "./app.auth";
 import { AppRoutes } from "./app.routes";
+import { NavigationContainer } from "@react-navigation/native";
 
 export function Routes() {
   const [loading, setIsLoading] = useState(true);
@@ -22,5 +23,9 @@ export function Routes() {
     return <Loading />;
   }
 
-  return <>{user ? <AppAuth /> : <AppRoutes />}</>;
+  return (
+    <NavigationContainer>
+      {user ? <AppAuth /> : <AppRoutes />}
+    </NavigationContainer>
+  );
 }
