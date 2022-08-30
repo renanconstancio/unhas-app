@@ -1,118 +1,67 @@
-import { HStack, ScrollView, Text, useTheme, VStack } from "native-base";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  Box,
+  Center,
+  Circle,
+  FlatList,
+  HStack,
+  Pressable,
+  ScrollView,
+  Text,
+  useTheme,
+  VStack,
+} from "native-base";
+// import { useNavigation, useRoute } from "@react-navigation/native";
 import { Header } from "../components/Header";
-import { OrderProps } from "../components/Order";
 import { Alert } from "react-native";
 import { Loading } from "../components/Loading";
+// import {
+//   CircleWavyCheck,
+//   ClipboardText,
+//   DesktopTower,
+//   Hourglass,
+// } from "phosphor-react-native";
+// import { CardDetails } from "../components/CardDetails";
+// import { Input } from "../components/Input";
+// import { Button } from "../components/Button";
+import { Fragment, useEffect, useState } from "react";
+import { SchedulesDTOS } from "../DTOs/SchedulesDTO";
 import {
+  ChatTeardropText,
   CircleWavyCheck,
-  ClipboardText,
-  DesktopTower,
+  ClockAfternoon,
   Hourglass,
 } from "phosphor-react-native";
-import { CardDetails } from "../components/CardDetails";
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
-import { useEffect, useState } from "react";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import db from "../config/firebase";
-import { dateFormat } from "../utils/firestoreDateFormat";
+// import {
+//   collection,
+//   doc,
+//   getDoc,
+//   getDocs,
+//   query,
+//   Timestamp,
+//   updateDoc,
+//   where,
+// } from "firebase/firestore";
+// import db from "../config/firebase";
+// import { dateFormat } from "../utils/firestoreDateFormat";
 
-type RouteParams = {
-  orderId: string;
-};
+import scheduleJson from "../../data.json";
 
-type OrderDetails = {
-  description: string;
-  solution: string;
-  closed: string;
-} & OrderProps;
+type SchedulesDetails = { nada?: string } & SchedulesDTOS;
 
 export function Calendar() {
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [solution, setSolution] = useState("");
-  // const [order, setOrder] = useState<OrderDetails>({} as OrderDetails);
+  const [isLoading, setIsLoading] = useState(true);
+  const [schedules, setSchedules] = useState<SchedulesDetails[]>();
 
   const { colors } = useTheme();
 
-  // const navigation = useNavigation();
-  // const route = useRoute();
+  useEffect(() => {
+    setSchedules(scheduleJson);
+    setIsLoading(false);
+  }, []);
 
-  // const { orderId } = route.params as RouteParams;
-
-  // async function handleOrderClosed() {
-  //   if (!solution) {
-  //     return Alert.alert(
-  //       "Solicitação",
-  //       "Informe a solução para encerrar  a solicitação.",
-  //     );
-  //   }
-
-  //   setIsLoading(true);
-  //   await updateDoc(doc(db, "orders", orderId), {
-  //     solution,
-  //     status: "closed",
-  //     updated_at: Timestamp.now(),
-  //   })
-  //     .then(() => {
-  //       Alert.alert("Solicitação", "Solicitação finalizada com sucesso.");
-  //       navigation.goBack();
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       setIsLoading(false);
-  //       return Alert.alert(
-  //         "Solicitação",
-  //         "Não foi possível registrar a solicitação.",
-  //       );
-  //     });
-  // }
-
-  // useEffect(() => {
-  //   (async () => {
-  //     return await getDoc(doc(db, "orders", orderId))
-  //       .then(resp => {
-  //         const {
-  //           created_at,
-  //           description,
-  //           patrimony,
-  //           status,
-  //           closed_at,
-  //           solution,
-  //         } = resp.data();
-
-  //         const closed = closed_at ? dateFormat(closed_at) : null;
-
-  //         setOrder({
-  //           id: orderId,
-  //           patrimony,
-  //           description,
-  //           status,
-  //           solution,
-  //           when: dateFormat(created_at),
-  //           closed,
-  //         });
-  //         setIsLoading(false);
-  //       })
-  //       .catch(() => {
-  //         Alert.alert("Ops", "Não há dados para serem mostrados");
-  //         navigation.goBack();
-  //       });
-  //   })();
-  // }, [orderId]);
-
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <VStack flex={1} bg={"gray.700"}>
@@ -125,59 +74,77 @@ export function Calendar() {
         showsHorizontalScrollIndicator={false}
         pagingEnabled={true}
       >
-        <HStack
-          bg={"gray.500"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          p={4}
-          mx={5}
-        >
-          <Text
-            fontSize={"5xl"}
-            fontWeight={"bold"}
-            textTransform={"uppercase"}
-            color={colors.white}
-            p={1}
-          >
-            01
-          </Text>
-          <VStack
-            h={"full"}
-            bg={"gray.700"}
-            justifyContent={"center"}
-            px={4}
-            flex={1}
-            borderRadius={"sm"}
-          >
-            <Text
-              fontSize={"sm"}
-              textTransform={"uppercase"}
-              color={colors.gray[300]}
-            >
-              01/01/2000 às 10:00
-            </Text>
-            <Text
-              fontSize={"lg"}
-              textTransform={"uppercase"}
-              fontWeight={"bold"}
-              color={colors.gray[100]}
-            >
-              Renan Agendado
-            </Text>
-            <Text
-              fontSize={"xs"}
-              textTransform={"uppercase"}
-              fontWeight={"bold"}
-              color={colors.gray[200]}
-            >
-              Fazer pé e mão
-            </Text>
-          </VStack>
-        </HStack>
+        <FlatList
+          data={schedules}
+          keyExtractor={item => item.id}
+          renderItem={({ item, index }) => (
+            <Pressable onPress={() => void 0} key={index}>
+              {item.children.map(({ id, month, children }) => (
+                <HStack
+                  bg={colors.gray[600]}
+                  mb={4}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                  rounded={"sm"}
+                  overflow={"hidden"}
+                  key={id}
+                >
+                  <Box h={"full"} w={5} bg={colors.primary[100]} />
+
+                  <Circle bg={colors.gray[500]} h={12} w={12} ml={5}>
+                    <Text color={colors.white} bold={"xl"}>
+                      {month}
+                    </Text>
+                    {/* <CircleWavyCheck
+                      size={24}
+                      mirrored={"s"}
+                      color={statusColor}
+                    /> */}
+                    {/* {data.status === "closed" ? (
+                    ) : (
+                      <Hourglass size={24} color={statusColor} />
+                    )} */}
+                  </Circle>
+                  <VStack flex={1} my={5} ml={5}>
+                    {children.map(() => (
+                      <>
+                        <Text color={"white"} fontSize={"md"}>
+                          Patrimômio {item.year}
+                        </Text>
+                        <HStack alignItems={"center"}>
+                          <ClockAfternoon size={15} color={colors.gray[300]} />
+                          <Text color={"gray.200"} fontSize={"xs"} ml={1}>
+                            {item.year}
+                          </Text>
+                        </HStack>
+                      </>
+                    ))}
+                  </VStack>
+                </HStack>
+              ))}
+            </Pressable>
+          )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 50 }}
+          ListEmptyComponent={() => (
+            <Center>
+              <ChatTeardropText color={colors.gray[300]} size={40} />
+              <Text
+                mt={6}
+                color={"gray.300"}
+                fontSize={"xl"}
+                textAlign={"center"}
+              >
+                Você ainda não possui {"\n"}
+                solicitações{" "}
+              </Text>
+            </Center>
+          )}
+        />
       </ScrollView>
 
       {/* <HStack bg={"gray.500"} justifyContent={"center"} p={4}>
-        {order.status === "closed" ? (
+        {schedules.status === "closed" ? (
           <CircleWavyCheck size={22} color={colors.yellow[300]} />
         ) : (
           <Hourglass size={22} color={colors.secondary[700]} />
@@ -188,34 +155,34 @@ export function Calendar() {
           fontSize={"sm"}
           textTransform={"uppercase"}
           color={
-            order.status === "closed"
+            schedules.status === "closed"
               ? colors.yellow[300]
               : colors.secondary[700]
           }
         >
-          {order.status === "closed" ? "finalizado" : "em andamento"}
+          {schedules.status === "closed" ? "finalizado" : "em andamento"}
         </Text>
       </HStack>
 
       <ScrollView mx={5} showsVerticalScrollIndicator={false}>
         <CardDetails
           title="equipamento"
-          description={`Patrimônio ${order.patrimony}`}
+          description={`Patrimônio ${schedules.patrimony}`}
           icon={DesktopTower}
         />
         <CardDetails
           title="Descrição do problema"
-          description={order.description}
+          description={schedules.description}
           icon={ClipboardText}
-          footer={`Registrado em ${order.when}`}
+          footer={`Registrado em ${schedules.when}`}
         />
         <CardDetails
           title="Solução"
-          description={order.solution}
+          description={schedules.solution}
           icon={CircleWavyCheck}
-          footer={order.closed && `Encerrado em ${order.closed}`}
+          footer={schedules.closed && `Encerrado em ${schedules.closed}`}
         >
-          {order.status == "open" && (
+          {schedules.status == "open" && (
             <Input
               placeholder="Descrição da solução"
               onChangeText={setSolution}
@@ -227,11 +194,11 @@ export function Calendar() {
         </CardDetails>
       </ScrollView>
 
-      {order.status === "open" && (
+      {schedules.status === "open" && (
         <Button
           title="Encerrar solicitação"
           m={5}
-          onPress={handleOrderClosed}
+          onPress={handleSchedulesClosed}
         />
       )} */}
     </VStack>
