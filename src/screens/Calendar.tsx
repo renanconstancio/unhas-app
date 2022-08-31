@@ -23,13 +23,12 @@ import { Loading } from "../components/Loading";
 // import { CardDetails } from "../components/CardDetails";
 // import { Input } from "../components/Input";
 // import { Button } from "../components/Button";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SchedulesDTOS } from "../DTOs/SchedulesDTO";
 import {
+  CalendarBlank,
   ChatTeardropText,
-  CircleWavyCheck,
   ClockAfternoon,
-  Hourglass,
 } from "phosphor-react-native";
 // import {
 //   collection,
@@ -79,45 +78,54 @@ export function Calendar() {
           keyExtractor={item => item.id}
           renderItem={({ item, index }) => (
             <Pressable onPress={() => void 0} key={index}>
-              {item.children.map(({ id, month, children }) => (
+              {item.children.map(({ id, month, children }, index1) => (
                 <HStack
-                  bg={colors.gray[600]}
                   mb={4}
+                  py={2}
+                  mx={4}
+                  bg={colors.gray[600]}
                   alignItems={"center"}
                   justifyContent={"space-between"}
                   rounded={"sm"}
                   overflow={"hidden"}
-                  key={id}
+                  key={index1}
                 >
-                  <Box h={"full"} w={5} bg={colors.primary[100]} />
-
-                  <Circle bg={colors.gray[500]} h={12} w={12} ml={5}>
-                    <Text color={colors.white} bold={"xl"}>
+                  <Circle bg={colors.gray[500]} h={"24"} w={"24"} ml={5}>
+                    <Text
+                      color={colors.white}
+                      fontSize={"2xl"}
+                      fontWeight={"bold"}
+                      textTransform={"uppercase"}
+                    >
                       {month}
+                      {/* <CalendarBlank size={32} /> */}
                     </Text>
-                    {/* <CircleWavyCheck
-                      size={24}
-                      mirrored={"s"}
-                      color={statusColor}
-                    /> */}
-                    {/* {data.status === "closed" ? (
-                    ) : (
-                      <Hourglass size={24} color={statusColor} />
-                    )} */}
                   </Circle>
-                  <VStack flex={1} my={5} ml={5}>
-                    {children.map(() => (
-                      <>
+                  <VStack
+                    flex={1}
+                    my={5}
+                    ml={5}
+                    space={4}
+                    alignItems={"center"}
+                  >
+                    {children.map(({ day, time }, idenx2) => (
+                      <VStack
+                        key={idenx2}
+                        bg={colors.gray[500]}
+                        mb={3}
+                        w={"full"}
+                        p={4}
+                      >
                         <Text color={"white"} fontSize={"md"}>
-                          Patrimômio {item.year}
+                          Dia {day}
                         </Text>
-                        <HStack alignItems={"center"}>
+                        <HStack alignItems={"center"} mb={3}>
                           <ClockAfternoon size={15} color={colors.gray[300]} />
                           <Text color={"gray.200"} fontSize={"xs"} ml={1}>
-                            {item.year}
+                            Hora {time.join(", ")}
                           </Text>
                         </HStack>
-                      </>
+                      </VStack>
                     ))}
                   </VStack>
                 </HStack>
